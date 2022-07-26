@@ -15,13 +15,9 @@ return new class extends Migration
     {
         Schema::create('galleries', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('user_id')->constrained();
-
             $table->string('title');
             $table->string('description');
-            $table->string('url');
-
             $table->timestamps();
         });
     }

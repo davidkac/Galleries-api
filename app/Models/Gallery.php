@@ -9,5 +9,54 @@ class Gallery extends Model
 {
     use HasFactory;
 
-    
+    protected $fillable = [
+        'user_id',
+        'title',
+        'description'
+    ];
+
+    public function images()
+    {
+        return $this->hasMany(Image::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeSearchByTerms($query, $terms = '')
+    {
+        if ($terms) {
+            $query->where('terms', 'like', "%$terms%");
+        }
+        return $query;
+    }
+
+    public function scopeSearchByTerm($query, $term = "", $userId = "")
+    {
+        $query->with('user', 'images', 'comments');
+
+        if ($userId) {
+            $query = $query->where('user_id', '=', $userId);
+        }
+
+        if (!$term && !$userId) {
+            return $query;
+        }
+
+        return  $query->where(function ($querry2) use ($term) {
+            $querry2->where('title', 'like', "%{$term}%")
+                ->orWhere('description', 'like', "%{$term}%")
+                ->orWhereHas('user', function ($querry3) use ($term) {
+                    $querry3->where('first_name', 'like', "%{$term}%")
+                        ->orWhere('last_name', 'like', "$%{$term}%");
+                });
+        });
+    }
 }
