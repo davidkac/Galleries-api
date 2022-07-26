@@ -16,7 +16,9 @@ class GalleryController extends Controller
 
         $userId = $request->query('userId', '');
         $term = $request->query('term', '');
-        $galleries = Gallery::searchByTerm($term, $userId)->latest()->paginate(10);
+        $galleries = Gallery::searchByTerm($term, $userId)
+            ->latest()
+            ->paginate(10);
 
         return response()->json($galleries);
     }
