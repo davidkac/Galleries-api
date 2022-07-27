@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CreateGalleryRequest;
 use App\Http\Requests\UpdateGalleryRequest;
 use App\Models\Gallery;
+use App\Models\Image;
 
 class GalleryController extends Controller
 {
@@ -37,7 +38,17 @@ class GalleryController extends Controller
             'title' => $data['title'],
             'description' => $data['description']
         ]);
-        return response()->json($gallery);
+
+        $imagesArr = [];
+        foreach ($data['images'] as $image) {
+            $imagesArr[] = Image::create([
+                'gallery_id' => $gallery->id,
+                'url' => $image
+            ]);
+        }
+        $gallery->load('images', 'user', 'comments', 'comments.user');
+
+        return response()->json($gallery, 201);
     }
 
     public function update($id, UpdateGalleryRequest $request)
@@ -45,6 +56,17 @@ class GalleryController extends Controller
         $data = $request->validated();
         $gallery = Gallery::findOrFail($id);
         $gallery->update($data);
+
+        $imagesArr = [];
+        foreach ($data['images'] as $image) {
+            $imagesArr[] = Image::create([
+                'gallery_id' => $gallery->id,
+                'url' => $image
+            ]);
+        }
+        $gallery->load('images', 'user', 'comments', 'comments.user');
+
+        return response()->json($gallery, 201);
 
         return response()->json($gallery);
     }
