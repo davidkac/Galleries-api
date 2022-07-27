@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\GalleryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,10 +30,13 @@ Route::delete('/galleries/{id}', [GalleryController::class, 'destroy'])->middlew
 
 
 
-
-
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/profile', [AuthController::class, 'getMyProfile'])->middleware('auth');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
+
+Route::get('/galleries/{id}/comments', [CommentController::class, 'index']);
+Route::get('/comments/{id}', [CommentController::class, 'show']);
+Route::post('/galleries/{id}/comments', [CommentController::class, 'store'])->middleware('auth');
+Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->middleware('auth');
