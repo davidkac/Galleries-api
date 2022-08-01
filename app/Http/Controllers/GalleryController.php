@@ -30,8 +30,7 @@ class GalleryController extends Controller
         return response()->json($gallery);
     }
 
-    public function store(CreateGalleryRequest $request)
-    {
+    public function store(CreateGalleryRequest $request){
         $data = $request->validated();
         $gallery = Gallery::create([
             'user_id' => Auth::user()->id,
@@ -40,10 +39,10 @@ class GalleryController extends Controller
         ]);
 
         $imagesArr = [];
-        foreach ($data['images'] as $image) {
+        foreach($data['images'] as $image) {
             $imagesArr[] = Image::create([
                 'gallery_id' => $gallery->id,
-                'url' => $image
+                'url' => $image['url']
             ]);
         }
         $gallery->load('images', 'user', 'comments', 'comments.user');
@@ -51,25 +50,23 @@ class GalleryController extends Controller
         return response()->json($gallery, 201);
     }
 
-    public function update($id, UpdateGalleryRequest $request)
-    {
+    public function update($id, UpdateGalleryRequest $request){
         $data = $request->validated();
         $gallery = Gallery::findOrFail($id);
         $gallery->update($data);
+        $gallery->images()->delete();
 
         $imagesArr = [];
-        foreach ($data['images'] as $image) {
+        foreach($request['images'] as $image) {
             $imagesArr[] = Image::create([
                 'gallery_id' => $gallery->id,
-                'url' => $image
+                'url' => $image['url']
             ]);
         }
         $gallery->load('images', 'user', 'comments', 'comments.user');
-
-        return response()->json($gallery, 201);
-
         return response()->json($gallery);
     }
+
 
     public function destroy($id)
     {

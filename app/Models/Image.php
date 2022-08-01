@@ -11,7 +11,8 @@ class Image extends Model
 
     protected $fillable = [
         'gallery_id',
-        'url'
+        'url',
+        'images'
     ];
 
     public function gallery()
